@@ -45,6 +45,16 @@ body:
       description: 破壊的変更、権限、他Issueとの依存、必要なレビュー・承認など。
     validations:
       required: false
+  - type: textarea
+    id: schedule
+    attributes:
+      label: 作業予定
+      description: 日付はYYYY-MM-DD形式（例：2026-10-19）で記載してください。未定の場合は日付を空欄にしてください。
+      value: |
+        開始日:
+        終了予定日:
+    validations:
+      required: false
   - type: dropdown
     id: execution_environment
     attributes:
