@@ -1,8 +1,11 @@
-
 name: Reusable - Add to Project
 
 on:
   workflow_call:
+    inputs:
+      sync_dates:
+        type: boolean
+        default: false
     secrets:
       project_token:
         required: true
@@ -15,7 +18,113 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Add issue or PR
+        id: add
         uses: actions/add-to-project@5afcf98fcd03f1c2f92c3c83f58ae24323cc57fd
         with:
           project-url: https://github.com/users/miyazawa-yusuke-md/projects/1
           github-token: ${{ secrets.project_token }}
+
+      - name: Set issue dates
+        if: ${{ inputs.sync_dates && github.event_name == 'issues' }}
+        env:
+          GH_TOKEN: ${{ secrets.project_token }}
+          ITEM_ID: ${{ steps.add.outputs.itemId }}
+        run: |
+          python3 - <<'PY'
+          import datetime
+          import json
+          import os
+          import re
+          import subprocess
+
+          # Project側の列名と完全に一致させる。
+          FIELD_NAMES = {
+              '開始日': 'Start date',
+              '終了予定日': 'Target date',
+          }
+
+          with open(os.environ['GITHUB_EVENT_PATH'], encoding='utf-8') as f:
+              event = json.load(f)
+          body = event['issue'].get('body') or ''
+          dates = {}
+          for label in FIELD_NAMES:
+              values = re.findall(
+                  rf'^{re.escape(label)}\s*[:：]\s*([^\r\n]*)$',
+                  body, flags=re.MULTILINE,
+              )
+              if len(values) > 1:
+                  raise SystemExit(f'{label}は1行だけ記載してください。')
+              if not values or not values[0].strip():
+                  continue
+              value = values[0].strip()
+              if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+                  raise SystemExit(f'{label}はYYYY-MM-DD形式にしてください。')
+              datetime.date.fromisoformat(value)
+              dates[label] = value
+
+          if not dates:
+              print('日付未指定のため、Projectの日付は変更しません。')
+              raise SystemExit(0)
+          if len(dates) == 2 and dates['開始日'] > dates['終了予定日']:
+              raise SystemExit('終了予定日は開始日以降にしてください。')
+
+          def graphql(query, variables=None):
+              result = subprocess.run(
+                  ['gh', 'api', 'graphql', '--input', '-'],
+                  input=json.dumps({'query': query, 'variables': variables or {}}),
+                  text=True, capture_output=True,
+              )
+              if result.returncode:
+                  raise SystemExit(result.stderr)
+              response = json.loads(result.stdout)
+              if response.get('errors'):
+                  raise SystemExit(json.dumps(response['errors'], ensure_ascii=False))
+              return response['data']
+
+          data = graphql('''
+          query {
+            user(login: "miyazawa-yusuke-md") {
+              projectV2(number: 1) {
+                id
+                fields(first: 100) {
+                  pageInfo { hasNextPage }
+                  nodes { ... on ProjectV2Field { id name dataType } }
+                }
+              }
+            }
+          }
+          ''')
+          project = data['user']['projectV2']
+          if not project:
+              raise SystemExit('Project 1が見つからないか、アクセス権限がありません。')
+          if project['fields']['pageInfo']['hasNextPage']:
+              raise SystemExit('フィールドが100件を超えています。取得処理の拡張が必要です。')
+
+          # 全フィールドを確認してから書き込む。
+          updates = []
+          for label, value in dates.items():
+              name = FIELD_NAMES[label]
+              matches = [f for f in project['fields']['nodes']
+                         if f.get('name') == name and f.get('dataType') == 'DATE']
+              if len(matches) != 1:
+                  raise SystemExit(f'Projectに日付型の「{name}」を用意してください。')
+              updates.append((matches[0]['id'], value))
+          item_id = os.environ.get('ITEM_ID')
+          if not item_id:
+              raise SystemExit('Projectの項目IDが取得できませんでした。')
+
+          mutation = '''
+          mutation($project: ID!, $item: ID!, $field: ID!, $date: Date!) {
+            updateProjectV2ItemFieldValue(input: {
+              projectId: $project, itemId: $item, fieldId: $field,
+              value: {date: $date}
+            }) { projectV2Item { id } }
+          }
+          '''
+          for field_id, value in updates:
+              graphql(mutation, {
+                  'project': project['id'], 'item': item_id,
+                  'field': field_id, 'date': value,
+              })
+          print('Projectの日付を更新しました。')
+          PY
