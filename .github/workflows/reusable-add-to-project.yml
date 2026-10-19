@@ -49,7 +49,7 @@ jobs:
           dates = {}
           for label in FIELD_NAMES:
               values = re.findall(
-                  rf'^{re.escape(label)}\s*[:：]\s*([^\r\n]*)$',
+                  rf'^{re.escape(label)}[ \t]*[:：][ \t]*([^\r\n]*)\r?$',
                   body, flags=re.MULTILINE,
               )
               if len(values) > 1:
