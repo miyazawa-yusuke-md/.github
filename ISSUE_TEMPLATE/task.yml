@@ -1,0 +1,37 @@
+name: 簡易タスク
+description: 小さな作業・調査・修正を素早く登録する
+title: "[タスク] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        調査、雑務、軽微な修正、後で検討する作業向けです。
+        個人情報・非公開の原データ・認証情報は記載しないでください。
+  - type: textarea
+    id: task
+    attributes:
+      label: やること
+      description: 何をするかを簡潔に記載してください。
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: 完了の目安
+      description: どうなれば完了か。必要であればチェックリストにしてください。
+    validations:
+      required: false
+  - type: textarea
+    id: references
+    attributes:
+      label: 補足・関連リンク
+      description: 背景や関連Issueなど。省略できます。
+    validations:
+      required: false
+  - type: checkboxes
+    id: confidentiality
+    attributes:
+      label: 情報管理の確認
+      options:
+        - label: 個人情報・機密データの原本・認証情報をIssueに記載していません。
+          required: true

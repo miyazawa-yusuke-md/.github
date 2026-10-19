@@ -1,0 +1,21 @@
+
+name: Reusable - Add to Project
+
+on:
+  workflow_call:
+    secrets:
+      project_token:
+        required: true
+
+permissions: {}
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Add issue or PR
+        uses: actions/add-to-project@5afcf98fcd03f1c2f92c3c83f58ae24323cc57fd
+        with:
+          project-url: https://github.com/users/miyazawa-yusuke-md/projects/1
+          github-token: ${{ secrets.project_token }}

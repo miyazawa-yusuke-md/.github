@@ -1,0 +1,78 @@
+name: 研究課題
+description: 研究の問い・仮説・方法・評価計画を整理する
+title: "[研究] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        研究の目的と検証方針を記録します。探索的研究の場合は、その旨を明記してください。
+        患者・学生・顧客などの個人情報、非公開の原データ、認証情報は記載せず、安全な保管先で管理してください。
+  - type: textarea
+    id: question
+    attributes:
+      label: 研究の問い・背景
+      description: 何を明らかにするか。既存研究や現状の課題との違いも記載してください。
+      placeholder: "例：既存手法では○○が未解決のため、△△を検証する。"
+    validations:
+      required: true
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: 仮説・比較対象
+      description: 検証可能な仮説、比較対象、代替説明。探索的研究なら「探索的」と記載してください。
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: 研究デザイン・実施方法
+      description: 対象・データ・手法・解析の大枠。未確定事項は「未定」として明示してください。
+    validations:
+      required: true
+  - type: textarea
+    id: evaluation
+    attributes:
+      label: 評価指標・判断基準
+      description: 主要評価指標、ベースライン、成功条件、失敗・中止条件など。
+    validations:
+      required: true
+  - type: textarea
+    id: data_governance
+    attributes:
+      label: データ利用条件・倫理上の留意点
+      description: 利用許可、倫理審査、匿名化、アクセス制御など。該当しなければ空欄で構いません。
+    validations:
+      required: false
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: 成果物・完了条件
+      description: 論文、発表、解析コード、実験Issue、検証結果など。
+    validations:
+      required: false
+  - type: dropdown
+    id: execution_environment
+    attributes:
+      label: 主な実行環境（任意）
+      options:
+        - クラウドCPU
+        - ローカルCPU
+        - ローカルGPU
+        - 複数環境・その他
+        - 実行不要・未定
+    validations:
+      required: false
+  - type: textarea
+    id: references
+    attributes:
+      label: 関連Issue・PR・文献・資料
+      description: URLやIssue番号など。機密情報を含まない参照先を記載してください。
+    validations:
+      required: false
+  - type: checkboxes
+    id: confidentiality
+    attributes:
+      label: 情報管理の確認
+      options:
+        - label: 個人情報・機密データの原本・認証情報をIssueに記載していません。
+          required: true

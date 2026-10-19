@@ -1,0 +1,71 @@
+name: 実験・検証
+
+description: 再現条件・評価方法・実験結果を記録する
+title: "[実験] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        実行前の実験計画と実行後の結果の両方に利用できます。未実施の欄は「予定」「未実行」と明記してください。
+        個人情報や非公開の原データを貼らず、データの保管先や生成方法を概要として記載してください。
+  - type: textarea
+    id: objective
+    attributes:
+      label: 目的・検証する仮説
+      description: この実験で明らかにすること、関連する研究課題やIssue。
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: 再現条件
+      description: コードのcommit SHA、実行コマンド、依存関係・モデル・バージョン、seed、主要パラメータなど。実行前は予定を記載してください。
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: データ・対象・分割方法
+      description: データの由来、件数、前処理、分割条件、利用制約など。非公開の個票は添付しないでください。
+    validations:
+      required: true
+  - type: textarea
+    id: metrics
+    attributes:
+      label: 評価指標・比較方法
+      description: 指標、比較対象、統計手法、成功・中止条件など。
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: 結果・失敗・考察
+      description: 数値要約、予想との差、制約、次の実験。未実施の場合は空欄で構いません。
+    validations:
+      required: false
+  - type: dropdown
+    id: execution_environment
+    attributes:
+      label: 実行環境（任意）
+      options:
+        - クラウドCPU
+        - ローカルCPU
+        - ローカルGPU
+        - 複数環境・その他
+        - 実行不要・未定
+    validations:
+      required: false
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: 関連Issue・PR・結果ファイル
+      description: ログ・図表・成果物への安全な参照先。必要なら保存期間も記載してください。
+    validations:
+      required: false
+  - type: checkboxes
+    id: confidentiality
+    attributes:
+      label: 情報管理の確認
+      options:
+        - label: 個人情報・機密データの原本・認証情報をIssueに記載していません。
+          required: true

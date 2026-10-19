@@ -1,0 +1,58 @@
+name: 意思決定・判断記録
+description: 選択肢・決定理由・見直し条件を残す
+title: "[判断] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        技術選定、研究デザイン、運用方針などの意思決定を記録します。
+        検討中の場合は結論を「提案」「承認待ち」などと明記してください。
+  - type: textarea
+    id: context
+    attributes:
+      label: 判断が必要になった背景
+      description: 解決する課題、制約、影響範囲、期限など。
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: 比較した選択肢
+      description: 主な選択肢とメリット・デメリット。採用しない案も可能なら記載してください。
+    validations:
+      required: true
+  - type: textarea
+    id: decision
+    attributes:
+      label: 提案・決定内容
+      description: 決定内容とステータス（提案／承認待ち／確定）。確定した場合は決定日・決定者を記載してください。
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: 判断根拠
+      description: 検証結果、文献、費用、性能、安全性、運用負荷など。
+    validations:
+      required: false
+  - type: textarea
+    id: revisit
+    attributes:
+      label: 見直し条件・次のアクション
+      description: 再検討が必要になる条件、フォローアップするIssueなど。
+    validations:
+      required: false
+  - type: textarea
+    id: references
+    attributes:
+      label: 関連Issue・PR・資料
+      description: 補足資料や元になった議論へのリンク。
+    validations:
+      required: false
+  - type: checkboxes
+    id: confidentiality
+    attributes:
+      label: 情報管理の確認
+      options:
+        - label: 個人情報・機密データの原本・認証情報をIssueに記載していません。
+          required: true
